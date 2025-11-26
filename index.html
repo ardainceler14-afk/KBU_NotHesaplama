@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KBÜ Not Hesaplayıcı (Vize–Final/Bütünleme)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container mt-8 sm:mt-12">
+    <header class="mb-6">
+        <h1 class="text-3xl font-extrabold text-gray-800 text-center">KBÜ Not Hesaplayıcı</h1>
+        <p class="text-sm text-gray-500 text-center mt-2">Ders başarı notunuzu ve harf notunuzu yönetmeliğe uygun olarak otomatik hesaplayın.</p>
+    </header>
+
+    <form id="calculatorForm" class="space-y-6">
+        
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="flex flex-col">
+                <label for="midtermNote" class="text-sm font-medium text-gray-700 mb-1">Vize / Yıl İçi Notu (0-100)</label>
+                <input type="number" id="midtermNote" placeholder="Örn: 70" class="grade-input border border-gray-300 p-2 focus:ring-blue-500 focus:border-blue-500" required min="0" max="100">
+                <p id="midtermError" class="text-xs text-red-500 mt-1 hidden"></p>
+            </div>
+            
+            <div class="flex flex-col">
+                <label for="finalNote" class="text-sm font-medium text-gray-700 mb-1">Final Notu (0-100)</label>
+                <input type="number" id="finalNote" placeholder="Örn: 60" class="grade-input border border-gray-300 p-2 focus:ring-blue-500 focus:border-blue-500" required min="0" max="100">
+                <p id="finalError" class="text-xs text-red-500 mt-1 hidden"></p>
+            </div>
+
+        
+            <div class="flex flex-col">
+                <label for="makeUpNote" class="text-sm font-medium text-gray-700 mb-1">Bütünleme Notu (Opsiyonel)</label>
+                <input type="number" id="makeUpNote" placeholder="Boş bırakılabilir" class="grade-input border border-gray-300 p-2 focus:ring-yellow-500 focus:border-yellow-500" min="0" max="100">
+                <p id="makeUpError" class="text-xs text-red-500 mt-1 hidden"></p>
+            </div>
+        </div>
+
+        <div class="space-y-4 pt-2 border-t border-gray-200">
+        
+            <div class="flex items-center">
+                <input id="isAbsent" type="checkbox" class="h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500">
+                <label for="isAbsent" class="ml-2 block text-sm font-medium text-gray-700 select-none">
+                    Dersin devam koşulunu sağlamadım (F1 durumu)
+                </label>
+            </div>
+            
+           
+            <div>
+                <span class="text-sm font-medium text-gray-700">Genel/Bütünleme sınavına girdim mi?</span>
+                <div class="mt-2 flex space-x-4">
+                    <div class="flex items-center">
+                        <input id="attendedYes" name="attendedExam" type="radio" value="yes" checked class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                        <label for="attendedYes" class="ml-2 text-sm text-gray-700 select-none">Evet, girdim.</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input id="attendedNo" name="attendedExam" type="radio" value="no" class="h-4 w-4 text-red-600 border-gray-300 focus:ring-red-500">
+                        <label for="attendedNo" class="ml-2 text-sm text-gray-700 select-none">Hayır, girmedim (F2 durumu).</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="flex flex-col sm:flex-row gap-4 pt-4 border-t border-gray-200">
+            <button type="submit" id="calculateBtn" class="flex-1 px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50 transition duration-150 ease-in-out">
+                Hesapla
+            </button>
+            <button type="button" id="resetBtn" class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-400 focus:ring-opacity-50 transition duration-150 ease-in-out" onclick="resetForm()">
+                Sıfırla
+            </button>
+        </div>
+    </form>
+
+    <div id="result-card" class="mt-8 hidden status-passed">
+        <h3 class="text-lg font-bold text-gray-800 mb-4">Hesaplama Sonuçları</h3>
+        
+        <div class="grid grid-cols-2 gap-4 text-center">
+            <div class="p-3 bg-white rounded-lg border border-gray-100">
+                <p class="text-xs text-gray-500 font-medium">Başarı Notu (0-100)</p>
+                <p id="outputSuccess" class="text-2xl font-extrabold text-blue-700 mt-1">--</p>
+            </div>
+            <div class="p-3 bg-white rounded-lg border border-gray-100">
+                <p class="text-xs text-gray-500 font-medium">Harf Notu</p>
+                <p id="outputLetter" class="text-2xl font-extrabold text-green-600 mt-1">--</p>
+            </div>
+        </div>
+
+        <div class="mt-4 p-3 bg-white rounded-lg border border-gray-100">
+            <p class="text-xs text-gray-500 font-medium">Durum</p>
+            <p id="outputStatus" class="text-lg font-bold mt-1 text-green-700">--</p>
+        </div>
+
+        <div class="mt-4 p-3 bg-white rounded-lg border border-gray-100">
+            <p class="text-xs text-gray-500 font-medium">Açıklama</p>
+            <p id="outputExplanation" class="text-sm text-gray-600 mt-1">--</p>
+        </div>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
